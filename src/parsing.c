@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: dda-fons <dda-fons@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:11:16 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/07/08 12:37:01 by dda-fons         ###   ########.fr       */
+/*   Updated: 2025/07/11 14:45:24 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static const char	*valid_input(const char *str)
 	return (number);
 }
 
-static long	ft_atol(char *str)
+static long	ft_atol(const char *str)
 {
 	long	nbr;
 
@@ -55,9 +55,10 @@ static long	ft_atol(char *str)
 		nbr = (nbr * 10) + (*str++ - '0');
 	if (nbr > INT_MAX)
 		error_exit("The value is too big, INT_MAX is the limit");
+	return (nbr);
 }
 
-void	parse_input(t_table *table, char *av)
+void	parse_input(t_table *table, char **av)
 {
 	table->philo_nbr = ft_atol(av[1]);
 	table->time_to_die = ft_atol(av[2]) * 1e3;

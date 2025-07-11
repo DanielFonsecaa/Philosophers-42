@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: dda-fons <dda-fons@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 11:55:35 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/07/08 19:15:38 by dda-fons         ###   ########.fr       */
+/*   Updated: 2025/07/11 15:13:05 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	main(int argc, char **argv)
 		parse_input(&table, argv);
 		init_data(&table);
 		start_dinner(&table); //todo
-		clean(&table); //todo
+		//clean(&table); //todo
 	}
 	else
 	{

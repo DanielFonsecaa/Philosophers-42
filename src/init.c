@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: dda-fons <dda-fons@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:37:35 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/07/08 19:15:19 by dda-fons         ###   ########.fr       */
+/*   Updated: 2025/07/11 15:24:07 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,15 @@ static void	philo_init(t_table *table)
 	int		i;
 	t_philo	*philo;
 
-	i = 0;
-	while (i++ < table->philo_nbr)
+	i = -1;
+	while (++i < table->philo_nbr)
 	{
 		philo = table->philos + i;
 		philo->philo_id = i + 1;
 		philo->full = false;
 		philo->meals_count = 0;
 		philo->table = table;
+		safe_mutex_handle(&philo->philo_mutex, INIT);
 		assign_forks(philo, table->forks, i);
 	}
 }
@@ -47,14 +48,14 @@ void	init_data(t_table *table)
 {
 	int	i;
 
-	i = 0;
+	i = -1;
 	table->end_simulation = false;
 	table->all_threads_ready = false;
 	table->philos = safe_malloc(sizeof(t_philo) * table->philo_nbr);
 	table->forks = safe_malloc(sizeof(t_fork) * table->philo_nbr);
 	safe_mutex_handle(&table->table_mutex, INIT);
 	safe_mutex_handle(&table->write_mutex, INIT);
-	while (i++ < table->philo_nbr)
+	while (++i < table->philo_nbr)
 	{
 		safe_mutex_handle(&table->forks[i].fork, INIT);
 		table->forks[i].fork_id = i;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: dda-fons <dda-fons@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 11:36:59 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/07/08 19:14:28 by dda-fons         ###   ########.fr       */
+/*   Updated: 2025/07/11 15:25:13 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@
 # define W  "\033[1;37m"
 # define B "\033[1m"
 # define UNDL "\033[4m"
+
+# define DEBUG_MODE 0
 
 //ENEM FOR MUTEX
 typedef enum e_opcode
@@ -85,6 +87,7 @@ typedef struct s_philo
 	t_fork		*first_fork;
 	t_fork		*second_fork;
 	pthread_t	thread_id;
+	t_mtx		philo_mutex;
 	t_table		*table;
 }		t_philo;
 
@@ -112,7 +115,7 @@ long	get_time(t_time_code time_code);
 void	precise_usleep(long usec, t_table *table);
 
 // ***** parsing *****
-void	parse_input(t_table *table, char *av);
+void	parse_input(t_table *table, char **av);
 
 //***** safe functions *****
 void	*safe_malloc(size_t bytes);
@@ -134,11 +137,13 @@ bool	simulation_finished(t_table *table);
 void	wait_all_threads(t_table *table);
 
 // ***** write *****
-void	write_status(t_philo_status status, t_philo *philo);
+void	write_status(t_philo_status status, t_philo *philo, bool debug);
 void	write_status_debug(t_philo_status status, t_philo *philo, long elapsed);
 
 //dinner
 void	*dinner_simulation(void *data);
 void	start_dinner(t_table *table);
+
+void	clean(t_table *table);
 
 #endif
