@@ -6,7 +6,7 @@
 /*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 11:59:10 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/07/08 18:38:47 by dda-fons         ###   ########.fr       */
+/*   Updated: 2025/07/12 16:10:29 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,13 +43,30 @@ void	precise_usleep(long usec, t_table *table)
 		elapsed = get_time(MICROSECOND) - start;
 		remain = usec - elapsed;
 		if (remain > 1e3)
-			usleep(usec / 2);
+			usleep(remain / 2);
 		else
 		{
 			while (get_time(MICROSECOND) - start < usec)
 				;
 		}
 	}
+}
+
+void	clean(t_table *table)
+{
+	t_philo	*philo;
+	int		i;
+
+	i = -1;
+	while (++i < table->philo_nbr)
+	{
+		philo = table->philos + i;
+		safe_mutex_handle(&philo->philo_mutex, DESTOY);
+	}
+	safe_mutex_handle(&table->write_mutex, DESTOY);
+	safe_mutex_handle(&table->table_mutex, DESTOY);
+	free(table->forks);
+	free(table->philos);
 }
 
 void	error_exit(char *error)

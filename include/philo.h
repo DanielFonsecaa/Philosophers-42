@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dda-fons <dda-fons@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 11:36:59 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/07/11 15:25:13 by dda-fons         ###   ########.fr       */
+/*   Updated: 2025/07/12 16:19:37 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,18 +93,20 @@ typedef struct s_philo
 
 typedef struct s_table
 {
-	long	philo_nbr;
-	long	time_to_die;
-	long	time_to_eat;
-	long	time_to_sleep;
-	long	nbr_limit_meals;
-	long	start_simulation;
-	bool	end_simulation;
-	bool	all_threads_ready;
-	t_mtx	table_mutex;
-	t_mtx	write_mutex;
-	t_fork	*forks;
-	t_philo	*philos;
+	long		philo_nbr;
+	long		time_to_die;
+	long		time_to_eat;
+	long		time_to_sleep;
+	long		nbr_limit_meals;
+	long		start_simulation;
+	long		threads_running_nbr;
+	bool		end_simulation;
+	bool		all_threads_ready;
+	pthread_t	monitor;
+	t_mtx		table_mutex;
+	t_mtx		write_mutex;
+	t_fork		*forks;
+	t_philo		*philos;
 }		t_table;
 
 // ***** PROTOTYPES *****
@@ -135,6 +137,8 @@ bool	simulation_finished(t_table *table);
 
 // ***** syncro and wait *****
 void	wait_all_threads(t_table *table);
+bool	all_threads_running(t_mtx *mutex, long *threads, long philo_nbr);
+void	increase_long(t_mtx *mutex, long *value);
 
 // ***** write *****
 void	write_status(t_philo_status status, t_philo *philo, bool debug);
@@ -143,6 +147,10 @@ void	write_status_debug(t_philo_status status, t_philo *philo, long elapsed);
 //dinner
 void	*dinner_simulation(void *data);
 void	start_dinner(t_table *table);
+
+//monitor
+void	*monitor_dinner(void *data);
+
 
 void	clean(t_table *table);
 

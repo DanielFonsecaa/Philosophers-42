@@ -6,7 +6,7 @@
 /*   By: dda-fons <dda-fons@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:11:16 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/07/11 14:45:24 by dda-fons         ###   ########.fr       */
+/*   Updated: 2025/07/12 17:19:15 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ static const char	*valid_input(const char *str)
 {
 	int			len;
 	const char	*number;
-	int			i;
 
 	len = 0;
 	while (is_space(*str))
