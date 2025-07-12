@@ -6,7 +6,7 @@
 /*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 11:36:59 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/07/12 16:19:37 by dda-fons         ###   ########.fr       */
+/*   Updated: 2025/07/12 18:31:24 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,7 @@ bool	simulation_finished(t_table *table);
 void	wait_all_threads(t_table *table);
 bool	all_threads_running(t_mtx *mutex, long *threads, long philo_nbr);
 void	increase_long(t_mtx *mutex, long *value);
+void	de_syncronize_philos(t_philo *philo);
 
 // ***** write *****
 void	write_status(t_philo_status status, t_philo *philo, bool debug);
@@ -147,10 +148,10 @@ void	write_status_debug(t_philo_status status, t_philo *philo, long elapsed);
 //dinner
 void	*dinner_simulation(void *data);
 void	start_dinner(t_table *table);
+void	thinking(t_philo *philo, bool pre_simulaton);
 
 //monitor
 void	*monitor_dinner(void *data);
-
 
 void	clean(t_table *table);
 
