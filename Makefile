@@ -37,7 +37,7 @@ HEADERS			= $(INC_PATH)/philo.h
 
 CC				= cc
 
-CFLAGS			= -Wall -Wextra -Werror -g
+CFLAGS = -pthread -fsanitize=address -fsanitize=leak -fsanitize-address-use-after-scope -Wall -Wextra -Werror -g
 
 INC				= -I $(INC_PATH)
 
@@ -59,14 +59,16 @@ $(NAME): $(BUILD_PATH) $(LIBFT_ARC) $(OBJS)	## Compile
 	@clear
 	@printf "\n"
 	@printf "\n"
-	@printf "          ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
-	@printf "          ┃$(BLINK)$(B)$(GOLD)𝐏 𝐡 𝐢 𝐥 𝐨 𝐬 𝐨 𝐩 𝐡 𝐞 𝐫 𝐬$(D)  ┃\n"
-	@printf "     ┏━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━┓\n"
-	@printf "     ┃ Program has compiled ${GRN}${BOLD}SUCCESSFULLY! ${D}┃\n"
-	@printf "     ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n"
+	@printf "	     ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
+	@printf "	     ┃$(BLINK)$(B)$(GOLD)𝐏 𝐡 𝐢 𝐥 𝐨 𝐬 𝐨 𝐩 𝐡 𝐞 𝐫 𝐬$(D)  ┃\n"
+	@printf "	┏━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━┓\n"
+	@printf "	┃ Program has compiled ${GRN}${BOLD}SUCCESSFULLY! ${D}┃\n"
+	@printf "	┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n"
 	@printf "\n"
 	@printf "\n"
-	
+	@printf "$(B)$(GRN)	USAGE: make run ARGS=\"5 800 200 200 3\" \n		     or make run$(D)\n"
+	@printf "\n"
+	@printf "\n"
 $(BUILD_PATH)/%.o: $(SRC_PATH)/%.c $(HEADERS)
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(INC) -c $< -o $@
@@ -74,6 +76,9 @@ $(BUILD_PATH)/%.o: $(SRC_PATH)/%.c $(HEADERS)
 $(BUILD_PATH):
 	@$(MKDIR_P) $(BUILD_PATH)
 	@echo "  $(B)$(GOLD)Creating$(SILV)$(BUILD_PATH)$(GOLD)folder :$(D)$(_SUCCESS) ✔︎ 📂"
+
+run: $(NAME)
+	@ASAN_OPTIONS=detect_leaks=1:leak_check_at_exit=1 ./$(NAME) $(or $(ARGS), 4 800 200 200 3)
 
 clean:				## Remove object files
 	@echo "  $(B)$(GOLD)Cleaning object files $(D)"
@@ -89,7 +94,7 @@ fclean: clean			## Remove executable
 
 re: fclean all	## Purge & Recompile
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re run
 
 #==============================================================================#
 #                                  UTILS                                       #
