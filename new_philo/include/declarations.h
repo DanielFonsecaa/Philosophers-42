@@ -6,7 +6,7 @@
 /*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/03 23:12:18 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/10/04 11:46:21 by dda-fons         ###   ########.fr       */
+/*   Updated: 2025/10/05 14:14:35 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,4 +41,13 @@
 # define W  "\033[1;37m"
 # define B "\033[1m"
 # define UNDL "\033[4m"
+
+// Invalid input messages
+# define ERR_INVALID_ARGS "Invalid arguments\n"
+# define ERR_INVALID_INPUT "Invalid input\n"
+# define ERR_ONLY_POSITIVE "Invalid input: only positive numbers please\n"
+# define ERR_ONLY_DIGITS "Invalid input: only digits please\n"
+# define ERR_TOO_BIG "Invalid input: INT_MAX is the limit\n"
+# define FAIL_INIT "Failed initialization\n"
+
 #endif

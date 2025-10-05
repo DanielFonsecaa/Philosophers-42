@@ -6,7 +6,7 @@
 /*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/03 22:55:00 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/10/04 21:43:05 by dda-fons         ###   ########.fr       */
+/*   Updated: 2025/10/05 13:40:37 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,17 @@
 /**
  * @brief Handles pthread mutex operation errors with detailed error messages
  * 
- * @param status Return value from pthread mutex operation (0 = success, errno = error)
- * @param code Operation type (LOCK, UNLOCK, INIT, DESTROY) for context-specific errors
- * @return int Returns 1 on success (status == 0), 0 on any error with message printed
+ * @param status Return value from pthread mutex operation
+ * @param code Operation type for context-specific errors
+ * @return int Returns 1 on success, 0 on any error with message printed
  */
-static int	handle_mutex_error(int status, t_code code)
+static int	handle_mutex_error(int status, t_code cod)
 {
 	if (0 == status)
 		return (1);
-	if (EINVAL == status && (LOCK == code || UNLOCK == code || DESTROY == code))
+	if (EINVAL == status && (LOCK == cod || UNLOCK == cod || DESTROY == cod))
 		return (print_and_return(MUTEX_VAL_INV, 0));
-	else if (EINVAL == status && INIT == code)
+	else if (EINVAL == status && INIT == cod)
 		return (print_and_return(ATTR_INV, 0));
 	else if (EDEADLK == status)
 		return (print_and_return(DEADLCK, 0));
@@ -60,10 +60,10 @@ int	safe_mutex_handle(pthread_mutex_t *mutex, t_code code)
 }
 
 /**
- * @brief Handles pthread thread operation errors with detailed error messages
+ * @brief Handles pthread thread operation errors
  * 
- * @param status Return value from pthread operation (0 = success, errno = error)
- * @param code Operation type (CREATE, JOIN) for context-specific error handling
+ * @param status Return value from pthread operation
+ * @param code Operation type for context-specific error handling
  * @return void Prints error message and returns (no return value)
  */
 static int	handle_thread_error(int status, t_code code)
@@ -94,12 +94,26 @@ static int	handle_thread_error(int status, t_code code)
  * @param code Operation type: CREATE or JOIN
  * @return void No return value (prints errors and returns on failure)
  */
-int	safe_thread_handle(pthread_t *thread, void *(*foo)(void *), void *data, t_code code)
+int	safe_thread_handle(pthread_t *th, void *(*foo)(void *),
+		void *sim, t_code code)
 {
 	if (CREATE == code)
-		return (handle_thread_error(pthread_create(thread, NULL, foo, data), code));
+		return (handle_thread_error(pthread_create(th, NULL, foo, sim), code));
 	else if (JOIN == code)
-		return (handle_thread_error(pthread_join(*thread, NULL), code));
+		return (handle_thread_error(pthread_join(*th, NULL), code));
 	else
 		return (print_and_return(WRONG_CODE, 0));
+}
+
+/**
+ * @brief Prints a string and returns a specified value
+ * 
+ * @param str String to be printed to stdout
+ * @param return_value Value to be returned by the function
+ * @return int The return_value parameter unchanged
+ */
+int	print_and_return(char *str, int return_value)
+{
+	printf("%s", str);
+	return (return_value);
 }

@@ -6,7 +6,7 @@
 /*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/04 11:50:40 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/10/04 21:57:05 by dda-fons         ###   ########.fr       */
+/*   Updated: 2025/10/05 14:54:13 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	*philo_drill(void *data)
 		if (simulation_finished(sim))
 			break ;
 		print_philo_action(sim, philo->id, THINK);
-		usleep(((sim->time_die - sim->time_sleep - sim->time_eat) / 4 )* 1000);
+		usleep(((sim->time_die - sim->time_sleep - sim->time_eat) / 4) * 1000);
 	}
 	return (NULL);
 }
@@ -77,22 +77,37 @@ bool	take_or_release_fork(t_sim *sim, t_philo *philo, bool is_taking)
 	}
 	if (is_taking)
 	{
-		if (!safe_mutex_handle(&sim->table.forks[left], LOCK))
-			return (0);
+		safe_mutex_handle(&sim->table.forks[left], LOCK);
 		print_philo_action(sim, philo->id, FORK);
-		
 		if (!safe_mutex_handle(&sim->table.forks[right], LOCK))
-		{
-			safe_mutex_handle(&sim->table.forks[left], UNLOCK);
-			return (0);
-		}
+			return (safe_mutex_handle(&sim->table.forks[left], UNLOCK));
 		print_philo_action(sim, philo->id, FORK);
 		return (1);
 	}
-	else
-	{
-		safe_mutex_handle(&sim->table.forks[left], UNLOCK);
-		safe_mutex_handle(&sim->table.forks[right], UNLOCK);
-		return (1);
-	}
+	safe_mutex_handle(&sim->table.forks[left], UNLOCK);
+	safe_mutex_handle(&sim->table.forks[right], UNLOCK);
+	return (1);
+}
+
+void	print_philo_action(t_sim *sim, int id, t_enum code)
+{
+	long	t_elapsed;
+
+	t_elapsed = get_time() - sim->time_simul_start;
+	if (id <= 0 || id > sim->table.num_philos)
+		return ;
+	if (sim->table.philos[id - 1].is_full)
+		return ;
+	safe_mutex_handle(&sim->write_mtx, LOCK);
+	if (code == FORK && !simulation_finished(sim))
+		printf("%ld %d has taken a fork\n", t_elapsed, id);
+	else if (code == EAT && !simulation_finished(sim))
+		printf("%ld %d is eating\n", t_elapsed, id);
+	else if (code == SLEEP && !simulation_finished(sim))
+		printf("%ld %d is sleeping\n", t_elapsed, id);
+	else if (code == THINK && !simulation_finished(sim))
+		printf("%ld %d is thinking\n", t_elapsed, id);
+	else if (code == DIE)
+		printf("%ld %d died\n", t_elapsed, id);
+	safe_mutex_handle(&sim->write_mtx, UNLOCK);
 }

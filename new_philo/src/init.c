@@ -6,7 +6,7 @@
 /*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/03 12:23:19 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/10/04 21:57:08 by dda-fons         ###   ########.fr       */
+/*   Updated: 2025/10/05 14:40:30 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,11 +86,15 @@ int	init_simulation(t_sim *sim, char **argv, int argc)
 	sim->time_sleep = ft_atoi(argv[4]);
 	sim->num_of_meals = -1;
 	if (argc == 6)
+	{
 		sim->num_of_meals = ft_atoi(argv[5]);
+		if (sim->num_of_meals <= 0)
+			return (print_and_return(ERR_INVALID_ARGS, 0));
+	}
 	if (sim->table.num_philos <= 0 || sim->time_die <= 0
 		|| sim->time_eat <= 0 || sim->time_sleep <= 0)
-		return (print_and_return("Arguments must be positive", 0));
+		return (print_and_return(ERR_INVALID_ARGS, 0));
 	if (!init_forks(sim) || !init_philos(sim))
-		return (print_and_return("Failed initialization", 0));
+		return (print_and_return("Failed initialization\n", 0));
 	return (1);
 }

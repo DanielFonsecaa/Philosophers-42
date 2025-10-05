@@ -6,7 +6,7 @@
 /*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/03 11:33:37 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/10/04 20:50:28 by dda-fons         ###   ########.fr       */
+/*   Updated: 2025/10/05 12:16:36 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,5 @@ typedef struct s_sim
 	pthread_mutex_t	write_mtx;
 	pthread_mutex_t	table_mtx;
 }			t_sim;
-
 
 #endif

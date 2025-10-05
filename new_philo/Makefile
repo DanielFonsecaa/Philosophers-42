@@ -17,7 +17,7 @@ SRC_PATH		= src
 INC_PATH		= include
 BUILD_PATH		= .build
 
-FILES			= dinner.c getter_setter.c init.c main.c philo.c safe.c utils.c
+FILES			= dinner.c getter_setter.c init.c main.c parser.c philo.c safe.c utils.c
 
 SRC				= $(addprefix $(SRC_PATH)/, $(FILES))
 OBJS			= $(SRC:$(SRC_PATH)/%.c=$(BUILD_PATH)/%.o)

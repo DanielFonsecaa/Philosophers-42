@@ -6,7 +6,7 @@
 /*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/03 11:33:42 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/10/04 20:52:46 by dda-fons         ###   ########.fr       */
+/*   Updated: 2025/10/05 12:17:29 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,8 @@ bool	take_or_release_fork(t_sim *sim, t_philo *philo, bool is_taking);
 
 //safe function
 int		safe_mutex_handle(pthread_mutex_t *mutex, t_code code);
-int		safe_thread_handle(pthread_t *thread, void *(*foo)(void *), void *data, t_code code);
+int		safe_thread_handle(pthread_t *thread,
+			void *(*foo)(void *), void *data, t_code code);
 long	get_long(pthread_mutex_t *mutex, long *value);
 void	set_bool(pthread_mutex_t *mutex, bool *dest, bool value);
 void	set_long(pthread_mutex_t *mutex, long *dest, long value);

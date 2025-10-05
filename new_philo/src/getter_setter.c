@@ -6,7 +6,7 @@
 /*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/04 10:57:10 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/10/04 20:36:40 by dda-fons         ###   ########.fr       */
+/*   Updated: 2025/10/05 12:38:58 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,37 +68,6 @@ long	get_long(pthread_mutex_t *mutex, long *value)
  * @param value Long value to set
  */
 void	set_long(pthread_mutex_t *mutex, long *dest, long value)
-{
-	safe_mutex_handle(mutex, LOCK);
-	*dest = value;
-	safe_mutex_handle(mutex, UNLOCK);
-}
-
-/**
- * @brief Safely get an int value with mutex protection
- * 
- * @param mutex Mutex to protect the operation
- * @param value Pointer to int value to read
- * @return int The protected int value
- */
-int	get_int(pthread_mutex_t *mutex, int *value)
-{
-	int	ret;
-
-	safe_mutex_handle(mutex, LOCK);
-	ret = *value;
-	safe_mutex_handle(mutex, UNLOCK);
-	return (ret);
-}
-
-/**
- * @brief Safely set an int value with mutex protection
- * 
- * @param mutex Mutex to protect the operation
- * @param dest Pointer to int destination
- * @param value Int value to set
- */
-void	set_int(pthread_mutex_t *mutex, int *dest, int value)
 {
 	safe_mutex_handle(mutex, LOCK);
 	*dest = value;
