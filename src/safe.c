@@ -5,83 +5,115 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/08 12:38:45 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/07/08 16:24:31 by dda-fons         ###   ########.fr       */
+/*   Created: 2025/10/03 22:55:00 by dda-fons          #+#    #+#             */
+/*   Updated: 2025/10/05 13:40:37 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/philo.h"
+#include "../include/philosophers.h"
 
-void	*safe_malloc(size_t bytes)
-{
-	void	*ret;
-
-	ret = malloc(bytes);
-	if (ret == NULL)
-		error_exit("Error with malloc");
-	return (ret);
-}
-
-static void	handle_mutex_error(int status, t_opcode code)
+/**
+ * @brief Handles pthread mutex operation errors with detailed error messages
+ * 
+ * @param status Return value from pthread mutex operation
+ * @param code Operation type for context-specific errors
+ * @return int Returns 1 on success, 0 on any error with message printed
+ */
+static int	handle_mutex_error(int status, t_code cod)
 {
 	if (0 == status)
-		return ;
-	if (EINVAL == status && (LOCK == code || UNLOCK == code || DESTOY == code))
-		error_exit("The value specifed by mutex is invalid");
-	else if (EINVAL == status && INIT == code)
-		error_exit("The value specifed by attr is invalid");
+		return (1);
+	if (EINVAL == status && (LOCK == cod || UNLOCK == cod || DESTROY == cod))
+		return (print_and_return(MUTEX_VAL_INV, 0));
+	else if (EINVAL == status && INIT == cod)
+		return (print_and_return(ATTR_INV, 0));
 	else if (EDEADLK == status)
-		error_exit("The current thread already owns the mutex. Will deadlock");
+		return (print_and_return(DEADLCK, 0));
 	else if (EPERM == status)
-		error_exit("The current thread does not own the mutex.");
+		return (print_and_return(THREAD_NOT_OWN, 0));
 	else if (ENOMEM == status)
-		error_exit("The process can't allocate enough memory to another mutex");
+		return (print_and_return(PR_NOT_MEM, 0));
 	else if (EBUSY == status)
-		error_exit("Mutex is locked");
+		return (print_and_return(MUTEX_LOCKED, 0));
+	return (1);
 }
 
-void	safe_mutex_handle(t_mtx *mutex, t_opcode opcode)
+/**
+ * @brief Safe wrapper for pthread mutex operations with error handling
+ * 
+ * @param mutex Pointer to the pthread_mutex_t to operate on
+ * @param code Operation type: LOCK, UNLOCK, INIT, or DESTROY
+ * @return int 1 on success, 0 on failure (with error message printed)
+ */
+int	safe_mutex_handle(pthread_mutex_t *mutex, t_code code)
 {
-	if (LOCK == opcode)
-		handle_mutex_error(pthread_mutex_lock(mutex), opcode);
-	else if (UNLOCK == opcode)
-		handle_mutex_error(pthread_mutex_unlock(mutex), opcode);
-	else if (INIT == opcode)
-		handle_mutex_error(pthread_mutex_init(mutex, NULL), opcode);
-	else if (DESTOY == opcode)
-		handle_mutex_error(pthread_mutex_destroy(mutex), opcode);
+	if (LOCK == code)
+		return (handle_mutex_error(pthread_mutex_lock(mutex), code));
+	else if (UNLOCK == code)
+		return (handle_mutex_error(pthread_mutex_unlock(mutex), code));
+	else if (INIT == code)
+		return (handle_mutex_error(pthread_mutex_init(mutex, NULL), code));
+	else if (DESTROY == code)
+		return (handle_mutex_error(pthread_mutex_destroy(mutex), code));
 	else
-		error_exit("Wrong opcode for mutex handle");
+		return (print_and_return(WRONG_CODE, 0));
 }
 
-static void	handle_thread_error(int status, t_opcode code)
+/**
+ * @brief Handles pthread thread operation errors
+ * 
+ * @param status Return value from pthread operation
+ * @param code Operation type for context-specific error handling
+ * @return void Prints error message and returns (no return value)
+ */
+static int	handle_thread_error(int status, t_code code)
 {
 	if (0 == status)
-		return ;
+		return (1);
 	if (EAGAIN == status)
-		error_exit("No resources to create another thread\n");
+		return (print_and_return(TH_NO_RSC, 0));
 	else if (EINVAL == status && CREATE == code)
-		error_exit("The value specifed by attr is invalid \n");
-	else if (EINVAL == status && (JOIN == code || DETACH == code))
-		error_exit("The value specifed is not joinable \n");
+		return (print_and_return(ATTR_INV, 0));
+	else if (EINVAL == status && JOIN == code)
+		return (print_and_return(NOT_JOINABLE, 0));
 	else if (EDEADLK == status)
-		error_exit("Deadlock was detected or value of thread"
-			"specifies the calling thread\n");
+		return (print_and_return(DEADLOCK, 0));
 	else if (EPERM == status)
-		error_exit("The caller does not have permission \n");
+		return (print_and_return(NO_PERM, 0));
 	else if (ESRCH == status)
-		error_exit("No thread was found by the given thread ID \n");
+		return (print_and_return(NOT_FOUND, 0));
+	return (1);
 }
 
-void	safe_thread_handle(pthread_t *thread, void *(*foo)(void *),
-	void *data, t_opcode opcode)
+/**
+ * @brief Safe wrapper for pthread thread operations with error handling
+ * 
+ * @param thread Pointer to pthread_t thread identifier
+ * @param foo Function pointer to thread routine (used only for CREATE)
+ * @param data Argument to pass to thread routine (used only for CREATE)
+ * @param code Operation type: CREATE or JOIN
+ * @return void No return value (prints errors and returns on failure)
+ */
+int	safe_thread_handle(pthread_t *th, void *(*foo)(void *),
+		void *sim, t_code code)
 {
-	if (CREATE == opcode)
-		handle_thread_error(pthread_create(thread, NULL, foo, data), opcode);
-	else if (JOIN == opcode)
-		handle_thread_error(pthread_join(*thread, NULL), opcode);
-	else if (DETACH == opcode)
-		handle_thread_error(pthread_detach(*thread), opcode);
+	if (CREATE == code)
+		return (handle_thread_error(pthread_create(th, NULL, foo, sim), code));
+	else if (JOIN == code)
+		return (handle_thread_error(pthread_join(*th, NULL), code));
 	else
-		error_exit("Wrong opcode for thread handle");
+		return (print_and_return(WRONG_CODE, 0));
+}
+
+/**
+ * @brief Prints a string and returns a specified value
+ * 
+ * @param str String to be printed to stdout
+ * @param return_value Value to be returned by the function
+ * @return int The return_value parameter unchanged
+ */
+int	print_and_return(char *str, int return_value)
+{
+	printf("%s", str);
+	return (return_value);
 }

@@ -5,72 +5,66 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dda-fons <dda-fons@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/08 11:59:10 by dda-fons          #+#    #+#             */
-/*   Updated: 2025/07/12 16:10:29 by dda-fons         ###   ########.fr       */
+/*   Created: 2025/10/03 22:37:38 by dda-fons          #+#    #+#             */
+/*   Updated: 2025/10/05 14:30:58 by dda-fons         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/philo.h"
+#include "../include/philosophers.h"
 
-long	get_time(t_time_code time_code)
+long	get_time(void)
 {
 	struct timeval	tv;
+	long			time;
 
-	if (gettimeofday(&tv, NULL))
-		error_exit("Get time of day failed");
-	if (SECOND == time_code)
-		return (tv.tv_sec + (tv.tv_usec / 1e6));
-	else if (MILISECOND == time_code)
-		return ((tv.tv_sec * 1e3) + (tv.tv_usec / 1e3));
-	else if (MICROSECOND == time_code)
-		return ((tv.tv_sec * 1e6) + tv.tv_usec);
-	else
-		error_exit("Wrong input to get time");
-	return (1337);
+	gettimeofday(&tv, NULL);
+	time = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+	return (time);
 }
 
-void	precise_usleep(long usec, t_table *table)
+/**
+ * @brief Safely get an int value with mutex protection
+ * 
+ * @param mutex Mutex to protect the operation
+ * @param value Pointer to int value to read
+ * @return int The protected int value
+ */
+int	get_int(pthread_mutex_t *mutex, int *value)
 {
-	long	start;
-	long	elapsed;
-	long	remain;
+	int	ret;
 
-	start = get_time(MICROSECOND);
-	while (get_time(MICROSECOND) - start < usec)
-	{
-		if (simulation_finished(table))
-			break ;
-		elapsed = get_time(MICROSECOND) - start;
-		remain = usec - elapsed;
-		if (remain > 1e3)
-			usleep(remain / 2);
-		else
-		{
-			while (get_time(MICROSECOND) - start < usec)
-				;
-		}
-	}
+	safe_mutex_handle(mutex, LOCK);
+	ret = *value;
+	safe_mutex_handle(mutex, UNLOCK);
+	return (ret);
 }
 
-void	clean(t_table *table)
+/**
+ * @brief Safely set an int value with mutex protection
+ * 
+ * @param mutex Mutex to protect the operation
+ * @param dest Pointer to int destination
+ * @param value Int value to set
+ */
+void	set_int(pthread_mutex_t *mutex, int *dest, int value)
 {
-	t_philo	*philo;
-	int		i;
+	safe_mutex_handle(mutex, LOCK);
+	*dest = value;
+	safe_mutex_handle(mutex, UNLOCK);
+}
+
+void	free_all(t_sim *sim)
+{
+	int	i;
 
 	i = -1;
-	while (++i < table->philo_nbr)
+	while (++i < sim->table.num_philos)
 	{
-		philo = table->philos + i;
-		safe_mutex_handle(&philo->philo_mutex, DESTOY);
+		safe_mutex_handle(&sim->table.forks[i], DESTROY);
+		safe_mutex_handle(&sim->table.philos[i].philo_mtx, DESTROY);
 	}
-	safe_mutex_handle(&table->write_mutex, DESTOY);
-	safe_mutex_handle(&table->table_mutex, DESTOY);
-	free(table->forks);
-	free(table->philos);
-}
-
-void	error_exit(char *error)
-{
-	printf(RED"  %s  "RST, error);
-	exit(EXIT_FAILURE);
+	safe_mutex_handle(&sim->table_mtx, DESTROY);
+	safe_mutex_handle(&sim->write_mtx, DESTROY);
+	free(sim->table.forks);
+	free(sim->table.philos);
 }
