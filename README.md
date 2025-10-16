@@ -1,6 +1,18 @@
 # Philosophers-42
+<div align="center">
+<img width="150" height="150" alt="philosopherse" src="https://github.com/user-attachments/assets/3c7273e7-6156-4c0f-8948-6a39397b1294" />
+</div>
 
 A C implementation of the classic **Dining Philosophers Problem** using threads and mutexes, created for the 42 School curriculum.
+
+---
+
+<div align="center">
+  
+| Grade                                                             | Evaluation Information           |
+| :---------------------------------------------------------------- | :------------------------------- |
+| <img src="https://img.shields.io/badge/100%20%2F%20100%20%E2%98%85-sucess"/>  | `3 peers` `30 mins`  |
+</div>
 
 ---
 
